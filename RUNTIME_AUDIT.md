@@ -584,3 +584,17 @@ Evidence: `/var/folders/kv/8x_b9m997wx09dpfwv80n6ww0000gn/T/candidate-kit-clean-
 Credential-pattern scan of the publish manifest, including DOCX XML, found no
 matches. Local .env files, environments, caches, logs and generated dumps are
 excluded. This does not claim exhaustive detection of every possible secret.
+
+## Public repository publication
+
+On 2026-10-12, published the user's authorized 24-file project as
+[iworkforpurpose/hrone-attendance-api](https://github.com/iworkforpurpose/hrone-attendance-api).
+The local project has its own Git repository; unrelated home-directory history
+is excluded. Implementation commit: 0d553777e02fc6fcc6dc5b6ffddd60f25fbddd7d.
+
+GitHub API confirms public visibility, private=false and main as the default
+branch. An anonymous HTTPS clone with credentials/prompts disabled succeeded;
+its HEAD matched the pushed commit and every tracked file matched byte-for-byte.
+The exact 24-file manifest excludes environments, secrets, caches, Dockerfiles
+and generated dumps. README now provides the repository link and clone setup.
+Publishing was authorized; evaluator submission remains explicitly deferred.

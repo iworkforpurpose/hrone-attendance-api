@@ -4,7 +4,8 @@
 
 - Agreed workflow: Part 1 is review and fix; Part 2 is implementation.
 - Documentation is maintained during both parts using the checkpoint in `AGENTS.md`.
-- Active state: Part 1 and all three Part 2 groups are implemented and verified.
+- Active state: Part 1 and all three Part 2 groups are implemented and verified;
+  the public GitHub repository is published. Evaluator submission is deferred.
 - Manual testing runtime: API http://127.0.0.1:8001 (PID 73940), MongoDB container
   candidate-kit-dev-mongo at port 27028, database attendance_manual_dev_888d4e68.
   Both are deliberately running for the user; see manual session entry below.
@@ -14,8 +15,10 @@
 - Verification: 512 checks passed in each of eight real MongoDB 6/7 × workers
   1/2 × UTC/IST configurations (4096 executions; zero failures/errors/skips).
   See RUNTIME_AUDIT.md for original baseline and repaired evidence.
-- Next action: publish the completed project to a public GitHub repository, as
-  authorized by the user. Submission remains explicitly deferred.
+- Repository: https://github.com/iworkforpurpose/hrone-attendance-api (public,
+  main branch; local project repository tracks origin/main).
+- Next action: address any user review questions. Submit only when the user
+  explicitly requests it; submission remains deferred.
 - Planning decisions: immediate 409 on stale corrections; $densify trends; three review groups; full eight-configuration matrix before every group review. No pending Group 3 questions.
 - User preference: real runtime evidence is required; do not present assumptions
   or static review candidates as runtime-confirmed defects. Keep test evidence
@@ -282,3 +285,10 @@ completed review findings to `REVIEW.md` and implemented decision explanations t
 - Clean staged checkout verification completed: fresh requirements-only installation and pip check passed, followed by 19 real HTTP smoke checks in 2.575s startup. Fresh install selected Pydantic 2.14.1; this smoke check does not replace the earlier full matrix with 2.14.0. All twelve operations and five explain plans passed. Only the newly created UUID smoke database was dropped; temporary API stopped, manual data preserved.
 - Git diff --cached --check initially found one extra blank line at EOF in tests/conftest.py. Removed it and repeated the check successfully; test behavior is unchanged.
 - No naming preference arrived during preparation; using the offered default iworkforpurpose/hrone-attendance-api. That repository name returned 404 before creation. Publishing the reviewed 24-file manifest is the next action; evaluator submission remains deferred.
+
+## Public repository published
+
+- Created https://github.com/iworkforpurpose/hrone-attendance-api under the active iworkforpurpose account with public visibility, then pushed main. Root implementation commit: 0d553777e02fc6fcc6dc5b6ffddd60f25fbddd7d. Local main tracks origin/main; unrelated home-directory Git history was not included.
+- GitHub API confirms private=false, visibility=public and default_branch=main. An anonymous HTTPS clone with prompting/credential helpers disabled succeeded; its HEAD matched the local commit and all 24 tracked files matched byte-for-byte. No .env, virtual environment, caches, Dockerfile or generated dump is tracked.
+- Added the public repository link and clone commands to README. Recorded clean-checkout smoke verification and publication evidence in RUNTIME_AUDIT. Required deliverables and documentation are present. Documentation checkpoint checked; publish this final documentation update and verify the remote HEAD.
+- The evaluator link has not been submitted and no submission message was sent. User explicitly deferred submission; do not infer submission authorization from publishing.

@@ -1,5 +1,7 @@
 # Employee Attendance API
 
+[Public repository](https://github.com/iworkforpurpose/hrone-attendance-api)
+
 Python 3.11+, FastAPI and synchronous PyMongo; MongoDB 6.0+ (grader: 7.0).
 The HTTP and storage contracts are `openapi.yaml` and `DATA_MODEL.md`.
 All application code is in `app/main.py`.
@@ -7,6 +9,8 @@ All application code is in `app/main.py`.
 ## Setup and run
 
 ```sh
+git clone https://github.com/iworkforpurpose/hrone-attendance-api.git
+cd hrone-attendance-api
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
