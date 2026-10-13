@@ -666,7 +666,7 @@ Evidence directory:
 Includes summary.json with each actual request/response, 47 screenshots per
 profile (94 total), and two trace.zip files. Desktop trend and mobile correction
 screenshots were also visually inspected. Use the optional browser requirements
-and matching Chromium installation described in README to reproduce; add
+and matching Chromium installation in “Reproducing verification” below; add
 --headed to watch the browser. Screenshots/traces/raw responses stay outside Git.
 
 Development failures: the first probe attempted launch before the matching
@@ -692,3 +692,56 @@ submission was performed.
 
 Automation references: [Playwright installation](https://playwright.dev/python/docs/intro)
 and [locator guidance](https://playwright.dev/python/docs/locators).
+
+
+## Reproducing verification
+
+The application needs only requirements.txt. Additional test dependencies are
+explicit in requirements-dev.txt and requirements-browser.txt. From the repository
+root, with Docker available, run the HTTP matrix serially on separate test servers:
+
+```sh
+.venv/bin/python -m pip install -r requirements-dev.txt
+docker run --rm -d --name candidate-kit-group3-mongo7 -p 127.0.0.1:27038:27017 mongo:7 --setParameter enableTestCommands=1
+docker run --rm -d --name candidate-kit-group3-mongo6 -p 127.0.0.1:27039:27017 mongo:6 --setParameter enableTestCommands=1
+.venv/bin/python tests/run_runtime_matrix.py
+docker stop candidate-kit-group3-mongo7 candidate-kit-group3-mongo6
+```
+
+These commands reproduce the earlier recorded setup; moving them here does not
+claim a new test execution. Fixtures create/drop only their own UUID databases.
+Forced interleavings require test commands on these test-only ports; do not enable
+failpoints on the manual development server. Recovery tests own additional Docker
+containers and clean them up. A single configuration, while its test server runs:
+
+```sh
+TEST_MONGO_URI=mongodb://127.0.0.1:27038 .venv/bin/python -m pytest tests -q --tb=short
+```
+
+Test controls: TEST_MONGO_URI (loopback only; default 27028), TEST_WORKERS (default
+1), TEST_SERVER_TZ (default UTC). The matrix explicitly selects both versions,
+worker counts and UTC/Asia-Kolkata hosts. The older run_part_one_matrix.py runs
+only the starter test file and uses ports 27028/27029.
+
+For browser verification, provide an available unauthenticated loopback MongoDB
+server; all writes go to fresh UUID databases, not its configured manual database:
+
+```sh
+.venv/bin/python -m pip install -r requirements-browser.txt
+.venv/bin/python -m playwright install chromium
+.venv/bin/python tests/run_browser_walkthrough.py
+```
+
+Optional --headed shows the actual browser; --viewport desktop selects one layout;
+--mongo-uri selects the loopback test server; --artifacts chooses an evidence
+directory. Default desktop/mobile runs use real Swagger controls and save each
+network/rendered response, screenshots and traces to a fresh temporary directory.
+Browser runner files are outside pytest discovery; artifacts are excluded from Git.
+
+Reporting interpretation: employee attendance_pct is a 0-100 percentage with two
+places half-up; trend attendance_rate and moving_avg_7d are fractions with four.
+Trend ranges contain at most 92 inclusive calendar days. Explain supports
+attendance_list, employee_monthly, department_summary, late_leaderboard and
+department_trend. Monthly employee requires emp_code/month; trend requires
+department/from/to. Explain validates parameters and reports the main operation
+without enforcing a separate live resource-existence precheck.
