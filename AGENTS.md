@@ -116,6 +116,12 @@ Group 3 adds `tests/test_group_three_analytics.py` for ranks, dense daily ranges
 moving windows, real explain HTTP, and live/explain query equivalence. All twelve
 endpoints are implemented; consult WORK_LOG.md for final verification state.
 
+Additional browser verification: `tests/run_browser_walkthrough.py` uses actual
+Playwright Chromium Swagger interactions in desktop/mobile viewports, disposable
+UUID databases and temporary API processes. Install `requirements-browser.txt`
+and the matching Chromium build. It is standalone, outside pytest discovery;
+keep screenshots/traces/raw responses in a temporary directory, outside Git.
+
 Treat the samples as examples of document shapes, not sufficient correctness
 coverage. Initial-state observations above may become outdated after changes.
 

@@ -11,3 +11,6 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 *.log
+browser-artifacts/
+playwright-report/
+test-results/

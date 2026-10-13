@@ -2,7 +2,8 @@
 
 Current result: Part 1 repairs and all twelve endpoints are complete. The final
 suite passed 512 checks in each of eight configurations (4096 executions,
-zero failures/errors/skips). This document retains chronological evidence;
+zero failures/errors/skips). Additional Playwright Swagger verification passed
+92 browser-driven checks in desktop/mobile Chromium. This document retains chronological evidence;
 see “Group 3 final matrix and completed API” for the latest results.
 
 Recorded 2026-10-11. Tested the unchanged starter through actual localhost HTTP
@@ -598,3 +599,96 @@ its HEAD matched the pushed commit and every tracked file matched byte-for-byte.
 The exact 24-file manifest excludes environments, secrets, caches, Dockerfiles
 and generated dumps. README now provides the repository link and clone setup.
 Publishing was authorized; evaluator submission remains explicitly deferred.
+
+
+## Playwright Swagger browser verification — 2026-10-13
+
+Command: `.venv/bin/python tests/run_browser_walkthrough.py`.
+Playwright 1.63.0, Chromium 153.0.8010.12, MongoDB 7.0.43, Python 3.11.13.
+Desktop: 1440×1000; mobile emulation: 390×844. **Both profiles passed all 46
+scenarios: 92 browser-driven executions, zero final failures, no unhandled
+page JavaScript errors.** Every request used actual Swagger Try it out,
+parameters/JSON controls and Execute. No browser request context, injected fetch,
+network response mocks or application test hooks were used. The fixture loader
+and readiness poll are setup; they are not counted as browser executions.
+
+For every request the exact network status and JSON were checked against the
+rendered response body. All twelve operations had successful cases in both
+profiles; the five explain names were each executed separately. The same
+scenario/status sequence passed in desktop and mobile:
+
+| Operation | Calls per viewport | Observed HTTP statuses (count) |
+|---|---:|---|
+| GET `/health` | 1 | 200 (1) |
+| POST `/employees` | 5 | 201 (3), 409 (1), 422 (1) |
+| GET `/employees` | 3 | 200 (3) |
+| POST `/attendance/punch-in` | 6 | 201 (2), 404 (1), 409 (1), 422 (2) |
+| GET `/attendance` | 5 | 200 (3), 422 (2) |
+| POST `/attendance/punch-out` | 5 | 200 (2), 404 (1), 409 (1), 422 (1) |
+| PATCH `/attendance/{emp_code}/{date}` | 5 | 200 (2), 404 (1), 422 (2) |
+| GET `/analytics/employees/{emp_code}/monthly` | 2 | 200 (1), 404 (1) |
+| GET `/analytics/departments/summary` | 1 | 200 (1) |
+| GET `/analytics/leaderboard/late` | 2 | 200 (2) |
+| GET `/analytics/departments/{department}/trend` | 4 | 200 (2), 404 (1), 422 (1) |
+| GET `/admin/explain/{endpoint}` | 7 | 200 (5), 422 (2) |
+
+Concrete checks included:
+
+- Creation 201, duplicates 409, bad employee code 422; two filtered employee
+  pages return the correct total and employee code order; lowercase department
+  has no matches.
+- Punch-in with 900 milliseconds is stored/returned at whole seconds. String
+  and null timestamps return 422; unknown employee 404; repeated punch-in 409.
+- Attendance filters, missing legacy history/half_day defaults and integer nested
+  seeded-history instants work. Impossible/reversed dates return 422.
+- Equal punch-out returns 422, no qualifying record 404, closure 200 and repeated
+  closure 409. The main closed record has 8.5 hours, lateness 30, no overtime,
+  no half day and empty history.
+- WFH correction appends one entry with only status changed. A subsequent punch
+  correction produces 8.25 hours and lateness 45, retaining both entries and
+  integer nested before/after instants. No-op/absence-with-punch return 422;
+  unknown record returns 404. MongoDB inspection confirms BSON nested times.
+- October monthly report has 22 working days, 1 present day, 45 late minutes and
+  4.55 attendance percentage. Department headcount is 2 including a no-log
+  employee; average hours 8.25. Leaderboard cutoff 2 includes ranks 1,2,2,
+  ordered by employee code for ties.
+- Seven-day trend returns every date, headcount 2, rates .5/0/0/0/0/null/null and
+  moving averages .5/.25/.1667/.125/.1/.1/.1. An entirely empty range still has
+  seven rows and zero metrics. Invalid dates return 422 and unknown department
+  404. Overnight 05:40 punch belongs to the previous date; 06:40 closure has
+  1 hour, 40 overtime minutes and half_day true.
+- All five actual explain operations return executionStats with IXSCAN and no
+  COLLSCAN. Missing month and invalid trend date return 422. Startup creates all
+  nine non-default indexes.
+
+Evidence directory:
+`/var/folders/kv/8x_b9m997wx09dpfwv80n6ww0000gn/T/candidate-kit-playwright-ay_b4swe`.
+Includes summary.json with each actual request/response, 47 screenshots per
+profile (94 total), and two trace.zip files. Desktop trend and mobile correction
+screenshots were also visually inspected. Use the optional browser requirements
+and matching Chromium installation described in README to reproduce; add
+--headed to watch the browser. Screenshots/traces/raw responses stay outside Git.
+
+Development failures: the first probe attempted launch before the matching
+browser download completed. Initial runner attempts found three harness issues:
+Swagger's heading includes version text, React controls require visibility waits,
+and generated error status cells append “Undocumented” to the HTTP code.
+Corrected locators/waits/status-prefix assertion while keeping exact network and
+rendered-JSON assertions. These were setup/harness failures; no API defect or
+application change was required. Failed runs are not counted as final passes.
+
+Cleanup verified: all UUID browser databases removed, temporary HTTP processes
+stopped, and no candidate_kit_browser_ database remains. Retained manual API is
+healthy; manual counts remain 7 employees/10 logs and its prior EMP0099 record
+and two-entry history retain the recorded values. All browser writes targeted
+separate UUID databases, never the manual database.
+
+This adds actual browser-path evidence to the prior 4096-check HTTP/helper
+matrix. It does not rerun that matrix or claim every HTTP boundary/race/100k
+case was repeated in a browser. Firefox/WebKit and physical phones were not
+used; mobile refers to Chromium viewport/touch emulation. Source app, runtime
+requirements and supplied contracts/fixtures are unchanged. No evaluator
+submission was performed.
+
+Automation references: [Playwright installation](https://playwright.dev/python/docs/intro)
+and [locator guidance](https://playwright.dev/python/docs/locators).

@@ -73,6 +73,24 @@ test-only ports 27038/27039 and `enableTestCommands=1`; run serially and keep
 these servers separate from manual testing. The earlier Part 1 runner still
 uses ports 27028/27029 and runs only `test_starter_contract.py`.
 
+For actual Swagger browser interaction, with loopback MongoDB available:
+
+```sh
+.venv/bin/python -m pip install -r requirements-browser.txt
+.venv/bin/python -m playwright install chromium
+.venv/bin/python tests/run_browser_walkthrough.py
+```
+
+The standalone runner clicks Try it out/Execute for each endpoint, verifies
+rendered JSON against real network responses, and uses disposable UUID databases.
+Desktop/mobile Chromium runs save screenshots, traces and summary.json to a
+temporary evidence directory. Add `--headed` to watch or `--viewport desktop`
+for one layout; `--mongo-uri` selects an unauthenticated loopback test server.
+It does not target the manual application database or change the HTTP matrix.
+Verified 46 scenarios per viewport, 92 browser-driven executions total, with
+zero final failures or unhandled JavaScript errors. All twelve endpoints and
+five explain names passed; browser evidence is recorded in RUNTIME_AUDIT.md.
+
 ## Explain and reporting
 
 `GET /admin/explain/{endpoint}` supports attendance_list, employee_monthly,

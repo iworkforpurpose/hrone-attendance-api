@@ -5,7 +5,8 @@
 - Agreed workflow: Part 1 is review and fix; Part 2 is implementation.
 - Documentation is maintained during both parts using the checkpoint in `AGENTS.md`.
 - Active state: Part 1 and all three Part 2 groups are implemented and verified;
-  the public GitHub repository is published. Evaluator submission is deferred.
+  the additional desktop/mobile Playwright Swagger walkthrough passed.
+  The public GitHub repository is published. Evaluator submission is deferred.
 - Manual testing runtime: API http://127.0.0.1:8001 (PID 73940), MongoDB container
   candidate-kit-dev-mongo at port 27028, database attendance_manual_dev_888d4e68.
   Both are deliberately running for the user; see manual session entry below.
@@ -14,11 +15,13 @@
   writes/audit concurrency, all analytics and five admin explain operations verified.
 - Verification: 512 checks passed in each of eight real MongoDB 6/7 × workers
   1/2 × UTC/IST configurations (4096 executions; zero failures/errors/skips).
+  Additional browser verification: 46 scenarios per Chromium viewport, 92
+  executions total; all twelve endpoints and five explain names passed.
   See RUNTIME_AUDIT.md for original baseline and repaired evidence.
 - Repository: https://github.com/iworkforpurpose/hrone-attendance-api (public,
   main branch; local project repository tracks origin/main).
-- Next action: address any user review questions. Submit only when the user
-  explicitly requests it; submission remains deferred.
+- Next action: review the browser results with the user; submit only when
+  explicitly requested. Submission remains deferred.
 - Planning decisions: immediate 409 on stale corrections; $densify trends; three review groups; full eight-configuration matrix before every group review. No pending Group 3 questions.
 - User preference: real runtime evidence is required; do not present assumptions
   or static review candidates as runtime-confirmed defects. Keep test evidence
@@ -292,3 +295,23 @@ completed review findings to `REVIEW.md` and implemented decision explanations t
 - GitHub API confirms private=false, visibility=public and default_branch=main. An anonymous HTTPS clone with prompting/credential helpers disabled succeeded; its HEAD matched the local commit and all 24 tracked files matched byte-for-byte. No .env, virtual environment, caches, Dockerfile or generated dump is tracked.
 - Added the public repository link and clone commands to README. Recorded clean-checkout smoke verification and publication evidence in RUNTIME_AUDIT. Required deliverables and documentation are present. Documentation checkpoint checked; publish this final documentation update and verify the remote HEAD.
 - The evaluator link has not been submitted and no submission message was sent. User explicitly deferred submission; do not infer submission authorization from publishing.
+
+## Browser verification authorized
+
+- User asked whether Playwright testing had been performed. Answered accurately that earlier evidence was httpx/Uvicorn/real MongoDB and helper tests, not browser automation. User then said “you should consider doing that,” authorizing the additional browser walkthrough.
+- Use real Chromium to open Swagger, expand each operation, click Try it out, fill parameters/request JSON and click Execute. Verify both actual network responses and rendered response JSON. No page.request API calls, fetch evaluation, response mocks or API routing substitutions are browser endpoint evidence.
+- Create UUID disposable databases on loopback MongoDB and separate temporary API processes. Browser writes must never target the retained manual database. Keep screenshots, Playwright traces and raw request/response JSON outside Git. Exercise all twelve endpoints, five explain names, validation/conflicts, analytics edge examples and desktop/mobile viewports.
+- Add optional requirements-browser.txt and a standalone browser runner so the existing 512-check HTTP matrix remains unchanged. Application code is unchanged. Browser execution and final documentation reconciliation are pending.
+- Initial setup probe ran before the matching Chromium installation completed and could not launch; waited for installation. First runner then failed its exact title locator because Swagger includes “2.0.0 OAS 3.1” in the heading's accessible name. Changed the locator to the actual level-1 heading with a title prefix. These are setup/harness failures, not API defects; disposable database cleanup was confirmed in the runner report.
+- Second runner reached Swagger but counted Try it out before React finished expanding the operation, then waited for an Execute button that was not enabled. Added visibility assertions before counting controls and after enabling execution, plus removal verification when clearing old responses. This is a browser-harness timing fix; no API request or application defect was involved.
+- Third runner correctly observed health 200, employee 201 and duplicate employee 409. Swagger displays the error code as “409 Undocumented,” so an exact cell-text assertion failed despite the correct HTTP response. Assert the status prefix while retaining exact network-status and rendered-JSON checks. The badge comes from generated Swagger response-schema coverage; supplied openapi.yaml remains the authoritative contract. No application change was required.
+
+## Playwright browser walkthrough completed
+
+- Final command: .venv/bin/python tests/run_browser_walkthrough.py. Playwright 1.63.0, Chromium 153.0.8010.12, MongoDB 7.0.43, desktop 1440×1000 and mobile viewport 390×844. Both complete flows passed: 46 scenarios each, 92 browser-driven HTTP executions, zero final failures and no unhandled page JavaScript errors.
+- Every request was initiated through Swagger Try it out / form filling / Execute. All twelve endpoint operations had successful responses in both profiles; all five explain names had real indexed executionStats. Rendered response JSON matched actual network JSON for every case. No API request context, injected fetch, network interception/mocking or application changes were used.
+- Covered employee creation/duplicates/validation/pagination/exact filters; punches/truncation/unknowns/duplicates/interval checks; legacy and nested history serialization; corrections/no-op/absence constraints/recomputation/history retention; monthly/no-log department summary; leaderboard cutoff ties; dense/empty/weekend trends and moving averages; overnight assignment/overtime; explain missing/malformed parameters.
+- Evidence directory: /var/folders/kv/8x_b9m997wx09dpfwv80n6ww0000gn/T/candidate-kit-playwright-ay_b4swe. Contains summary.json with every request/status/response, 94 PNG screenshots and two trace.zip files. Visually inspected desktop trend and mobile correction screenshots. Chromium mobile viewport is emulation, not a physical phone; Firefox/WebKit and browser concurrency/100k scenarios were not run. Earlier HTTP matrix retains those API race/scale guarantees.
+- All browser UUID databases removed and temporary API processes stopped. Confirmed no candidate_kit_browser_ databases remain. Retained manual API is healthy; database still has 7 employees/10 attendance logs and EMP0099's unchanged WFH/8.5h/30-minute/two-history record. No manual database was used for browser writes.
+- Application code, runtime requirements, supplied contracts and fixtures remain unchanged. New optional requirements-browser.txt and standalone tests/run_browser_walkthrough.py keep browser artifacts outside Git and the HTTP suite unchanged. README, AGENTS and RUNTIME_AUDIT updated. Documentation checkpoint checked; push the verified runner/documentation under existing publication authorization, without submitting anything to the evaluator.
+- Static collection check: .venv/bin/python -m pytest tests --collect-only -q still collects exactly 512 tests. This confirms runner discovery isolation, not a fresh runtime matrix pass. Git verifies application/runtime-contract/fixture files unchanged; changed/new publish files pass credential-pattern and whitespace checks, and DECISIONS remains 200 words. Documentation checkpoint checked before commit/push.
