@@ -2,7 +2,8 @@
 
 [Public repository](https://github.com/iworkforpurpose/hrone-attendance-api).
 Python 3.11+, FastAPI, PyMongo and MongoDB 6.0+; all application code is in
-`app/main.py`. Contracts: `openapi.yaml` and `DATA_MODEL.md`.
+[app/main.py](app/main.py). Contracts: [openapi.yaml](openapi.yaml) and
+[DATA_MODEL.md](DATA_MODEL.md).
 
 From a clone of the repository, with MongoDB running:
 
@@ -34,8 +35,16 @@ Verification: 512 checks × eight MongoDB 6/7, workers 1/2, UTC/IST configuratio
 on 100000 logs, including lookups. An additional 92 Playwright Swagger checks
 passed in desktop/mobile Chromium. Tests use separate UUID databases.
 
-`REVIEW.md` records starter repairs; `DECISIONS.md` explains the choices.
-See [RUNTIME_AUDIT.md](RUNTIME_AUDIT.md#reproducing-verification) for test setup,
-commands, observed failures/results and browser artifacts. Browser dependencies
-are optional in `requirements-browser.txt`; runtime dependencies remain separate.
+Work proceeded in two parts: review and repair the starter, then implement the
+missing endpoints. Explanations and decisions were documented during both parts.
+Documentation files are in the repository root:
+
+- [REVIEW.md](REVIEW.md): original defects, failing examples and implemented fixes.
+- [DECISIONS.md](DECISIONS.md): indexes, write races, ranking ties, headcount and scaling choices.
+- [RUNTIME_AUDIT.md](RUNTIME_AUDIT.md): executed tests, results, browser evidence and [reproduction commands](RUNTIME_AUDIT.md#reproducing-verification).
+- [WORK_LOG.md](WORK_LOG.md): development sequence, detailed reasoning and verification checkpoints.
+- [AGENTS.md](AGENTS.md): repository rules and the ongoing documentation workflow.
+
+Optional browser dependencies are in `requirements-browser.txt`; runtime
+dependencies remain separate in `requirements.txt`.
 The evaluator's hidden tests have not been run.
